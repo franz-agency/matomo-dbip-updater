@@ -1,4 +1,5 @@
 <?php
+
 namespace Matomo\Plugins\DbipUpdater;
 
 use Matomo\Settings\TextSetting;
@@ -11,8 +12,8 @@ use Matomo\Settings\PluginSettings;
  *
  * Defines the configurable settings for the DbipUpdater plugin.
  *
- * @author Franz & Franz
- * @copyright Franz & Franz
+ * @author Franz und Franz
+ * @copyright Franz und Franz
  */
 class Settings extends PluginSettings
 {
@@ -29,7 +30,7 @@ class Settings extends PluginSettings
             'The URL endpoint returning JSON with download links to your DB-IP files. ' .
             'Replace "changeme" with your DB-IP account ID.' // description in UI
         ));
-        
+
         // Enable detailed logging
         $this->addSetting(new BoolSetting(
             'enableDetailedLogging',  // setting key
@@ -38,7 +39,7 @@ class Settings extends PluginSettings
             'When enabled, additional detailed information will be logged during updates. ' .
             'Useful for troubleshooting but may increase log size.' // description in UI
         ));
-        
+
         // Connection timeout setting
         $this->addSetting(new IntegerSetting(
             'connectionTimeout',      // setting key
@@ -47,7 +48,7 @@ class Settings extends PluginSettings
             'Timeout in seconds when connecting to the JSON endpoint. ' .
             'Increase this value if you experience timeout issues.' // description in UI
         ));
-        
+
         // Retry count on failure
         $this->addSetting(new IntegerSetting(
             'maxRetries',            // setting key

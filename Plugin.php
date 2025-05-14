@@ -1,4 +1,5 @@
 <?php
+
 namespace Matomo\Plugins\DbipUpdater;
 
 use Matomo\Plugin;
@@ -18,13 +19,13 @@ use Exception;
  *
  * @link https://franzundfranzisweb.com
  * @license GPL v3+
- * @author Franz & Franz
- * @copyright Franz & Franz
+ * @author Franz und Franz
+ * @copyright Franz und Franz
  */
 class DbipUpdater extends Plugin
 {
-    const PLUGIN_VERSION = '1.3.0';
-    
+    public const PLUGIN_VERSION = '1.3.0';
+
     /**
      * Register plugin settings container
      *
@@ -52,7 +53,7 @@ class DbipUpdater extends Plugin
 
         return [$task];
     }
-    
+
     /**
      * Called on plugin installation
      *
@@ -64,11 +65,11 @@ class DbipUpdater extends Plugin
         $requiredMatomoVersion = '5.0.0';
         if (version_compare(Version::VERSION, $requiredMatomoVersion, '<')) {
             throw new Exception(
-                "The DbipUpdater plugin requires Matomo $requiredMatomoVersion or later. " . 
+                "The DbipUpdater plugin requires Matomo $requiredMatomoVersion or later. " .
                 "You are using Matomo " . Version::VERSION
             );
         }
-        
+
         // Make sure the GeoIP2 section exists in config
         try {
             $configWriter = ConfigWriter::getInstance();
@@ -80,10 +81,10 @@ class DbipUpdater extends Plugin
             Log::error("DbipUpdater: Error during plugin installation: {$e->getMessage()}");
             throw new Exception("Failed to initialize plugin configuration: {$e->getMessage()}");
         }
-        
+
         parent::install();
     }
-    
+
     /**
      * Called on plugin uninstallation
      */
@@ -95,10 +96,10 @@ class DbipUpdater extends Plugin
         } catch (Exception $e) {
             Log::error("DbipUpdater: Error during plugin uninstallation: {$e->getMessage()}");
         }
-        
+
         parent::uninstall();
     }
-    
+
     /**
      * Plugin activation - logs the event
      */
@@ -111,10 +112,10 @@ class DbipUpdater extends Plugin
             // Don't throw here as it would prevent activation
             Log::error("DbipUpdater: Error during plugin activation: {$e->getMessage()}");
         }
-        
+
         parent::activate();
     }
-    
+
     /**
      * Plugin deactivation - logs the event
      */
@@ -127,7 +128,7 @@ class DbipUpdater extends Plugin
             // Don't throw here as it would prevent deactivation
             Log::error("DbipUpdater: Error during plugin deactivation: {$e->getMessage()}");
         }
-        
+
         parent::deactivate();
     }
 }

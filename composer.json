@@ -1,0 +1,35 @@
+{
+    "name": "franz-und-franz/matomo-dbip-updater",
+    "description": "Automatically updates the DB-IP MMDB URL for GeoIP2 with a configurable JSON endpoint and monthly schedule.",
+    "type": "matomo-plugin",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Franz und Franz",
+            "homepage": "https://franz.agency"
+        }
+    ],
+    "require": {
+        "php": ">=7.4.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7",
+        "phpmd/phpmd": "^2.13",
+        "symfony/process": "^5.4"
+    },
+    "scripts": {
+        "lint-php": "phpcs --standard=PSR12 Plugin.php Settings.php Task",
+        "lint-php-fix": "phpcbf --standard=PSR12 Plugin.php Settings.php Task",
+        "lint-md": "composer exec -- php -r \"passthru('npx markdownlint-cli *.md --fix');\"",
+        "lint": [
+            "@lint-php",
+            "@lint-md"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
+}
