@@ -105,18 +105,15 @@ class UpdateMmdbUrl extends ScheduledTask
      */
     private function loadSettings(): void
     {
-        /** @var SettingsManager $settingsManager */
-        $settingsManager = Container::get(SettingsManager::class);
-        $this->settings = $settingsManager
-            ->getContainer(SettingsManager::PLUGIN_SCOPE)
-            ->get('Matomo\Plugins\DbipUpdater\Settings');
+        // Direkt mit der SystemSettings-Klasse arbeiten
+        $this->settings = new Settings();
 
         // Set detailed logging flag based on settings
-        $this->detailedLogging = $this->settings->enableDetailedLogging;
+        $this->detailedLogging = (bool)$this->settings->enableDetailedLogging->getValue();
 
-        $this->logDetailed("Loaded settings: JSON URL={$this->settings->jsonUrl}, " .
-                           "Timeout={$this->settings->connectionTimeout}, " .
-                           "MaxRetries={$this->settings->maxRetries}");
+        $this->logDetailed("Loaded settings: JSON URL={$this->settings->jsonUrl->getValue()}, " .
+                           "Timeout={$this->settings->connectionTimeout->getValue()}, " .
+                           "MaxRetries={$this->settings->maxRetries->getValue()}");
     }
 
     /**
@@ -127,8 +124,8 @@ class UpdateMmdbUrl extends ScheduledTask
      */
     private function fetchAndExtractMmdbUrl(): string
     {
-        $jsonUrl = $this->settings->jsonUrl;
-        $timeout = (int)$this->settings->connectionTimeout;
+        $jsonUrl = $this->settings->jsonUrl->getValue();
+        $timeout = (int)$this->settings->connectionTimeout->getValue();
 
         // Create context with timeout from settings
         $context = stream_context_create([

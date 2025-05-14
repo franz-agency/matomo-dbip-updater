@@ -1,5 +1,6 @@
 {
     "name": "DbipUpdater",
+    "namespace": "Matomo\\Plugins\\DbipUpdater",
     "description": "Automatically updates the DB-IP MMDB URL for GeoIP2 with a configurable JSON endpoint and monthly schedule.",
     "version": "1.4.0",
     "theme": false,

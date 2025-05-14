@@ -1,0 +1,9 @@
+{% extends 'admin.twig' %}
+
+{% block content %}
+    <div piwik-content-block content-title="{{ 'DbipUpdater_Settings'|translate }}">
+        <div piwik-form>
+            {{ settings.getSettingsHtmlForm('DbipUpdater')|raw }}
+        </div>
+    </div>
+{% endblock %}

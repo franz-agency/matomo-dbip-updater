@@ -1,0 +1,11 @@
+{
+    "DbipUpdater": {
+        "Settings": "Automatic DB-IP Updates Configuration",
+        "SettingsDescription": "Configure automatic updates for the DB-IP MMDB database URLs. This plugin will regularly check for new database downloads and update your Matomo configuration accordingly.",
+        "BackToUserCountry": "Back to Geolocation Settings",
+        "PluginDescription": "Automatically updates the DB-IP MMDB URL for GeoIP2 integration"
+    },
+    "General": {
+        "BackToUserCountry": "Back to Geolocation Settings"
+    }
+}

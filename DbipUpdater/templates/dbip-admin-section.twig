@@ -1,0 +1,44 @@
+<div class="dbip-updater-section" style="background: #f8f8f8; padding: 20px; margin-top: 20px; border-radius: 4px; border-left: 4px solid #2c3e50;">
+    <h2 style="color: #2c3e50;">DB-IP Updater Einstellungen</h2>
+    <p>Konfigurieren Sie automatische Updates für die DB-IP MMDB URL für GeoIP2-Integration.</p>
+
+    <!-- Debug-Info -->
+    <div style="background-color: #ffeb3b; color: #000; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+        <strong>Settings-Debug:</strong> {{ settings is defined ? 'Einstellungen geladen' : 'Einstellungen nicht verfügbar' }}
+    </div>
+    
+    <!-- Manuelle Formular-Implementierung -->
+    <form method="post" action="index.php?module=CoreAdminHome&action=saveSystemSettings&pluginName=DbipUpdater">
+        {{ formNonce|default('')|raw }}
+
+        <div class="form-group">
+            <label>Download JSON URL:</label>
+            <input type="text" name="DbipUpdater.jsonUrl" class="form-control" 
+                   value="{{ settings.jsonUrl.getValue|default('https://db-ip.com/account/changeme/db/ip-to-location/') }}" />
+            <p class="help-block">Die URL, die JSON mit Download-Links zu Ihren DB-IP-Dateien zurückgibt. Ersetzen Sie "changeme" durch Ihre DB-IP-Account-ID.</p>
+        </div>
+        
+        <div class="form-group">
+            <label>Detaillierte Protokollierung aktivieren:</label>
+            <input type="checkbox" name="DbipUpdater.enableDetailedLogging" value="1" 
+                   {% if settings.enableDetailedLogging.getValue|default(false) %}checked="checked"{% endif %} />
+            <p class="help-block">Wenn aktiviert, werden zusätzliche detaillierte Informationen während der Updates protokolliert. Nützlich zur Fehlerbehebung, kann aber die Protokollgröße erhöhen.</p>
+        </div>
+        
+        <div class="form-group">
+            <label>Verbindungs-Timeout:</label>
+            <input type="number" name="DbipUpdater.connectionTimeout" class="form-control" 
+                   value="{{ settings.connectionTimeout.getValue|default(30) }}" min="5" max="120" />
+            <p class="help-block">Timeout in Sekunden bei der Verbindung zum JSON-Endpunkt. Erhöhen Sie diesen Wert, wenn Sie Timeout-Probleme haben.</p>
+        </div>
+        
+        <div class="form-group">
+            <label>Maximale Wiederholungen:</label>
+            <input type="number" name="DbipUpdater.maxRetries" class="form-control" 
+                   value="{{ settings.maxRetries.getValue|default(3) }}" min="0" max="10" />
+            <p class="help-block">Anzahl der Wiederholungsversuche, wenn eine Verbindung fehlschlägt. Auf 0 setzen, um die Wiederholungsfunktion zu deaktivieren.</p>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Einstellungen speichern</button>
+    </form>
+</div>
