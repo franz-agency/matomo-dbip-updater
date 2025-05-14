@@ -1,0 +1,11 @@
+{
+  "name": "DbipUpdater",
+  "version": "1.3.0",
+  "description": "Automatically updates the DB-IP MMDB URL for GeoIP2 with a configurable JSON endpoint and monthly schedule.",
+  "author": "Franz & Franz",
+  "license": "GPL v3+",
+  "theme": false,
+  "require": {
+    "matomo": ">=5.0.0,<6.0.0"
+  }
+}
