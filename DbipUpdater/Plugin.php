@@ -17,7 +17,7 @@ use Exception;
  * It fetches download links from a configurable JSON endpoint and updates the
  * Matomo configuration on a monthly schedule.
  *
- * @link https://franzundfranzisweb.com
+ * @link https://franz.agency
  * @license GPL v3+
  * @author Franz und Franz
  * @copyright Franz und Franz
