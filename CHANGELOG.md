@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.0 - 2025-05-14
+### Changed
+- Project restructured: moved all plugin files to DbipUpdater/ subdirectory
+- Kept development files in root directory for better development experience
+- Updated author name from "Franz & Franz" to "Franz und Franz"
+- Added development tools with linting for PHP and Markdown
+- Added comprehensive development documentation
+- Fixed coding style issues according to PSR-12 standard
+
 ## 1.3.0 - 2025-05-14
 ### Added
 - Added robust retry mechanism for failed connections

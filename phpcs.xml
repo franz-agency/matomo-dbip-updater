@@ -3,9 +3,7 @@
     <description>PHP CodeSniffer configuration for DbipUpdater Matomo plugin</description>
 
     <!-- Include all PHP files -->
-    <file>Plugin.php</file>
-    <file>Settings.php</file>
-    <file>Task</file>
+    <file>DbipUpdater</file>
     
     <!-- Exclude third-party code -->
     <exclude-pattern>*/vendor/*</exclude-pattern>

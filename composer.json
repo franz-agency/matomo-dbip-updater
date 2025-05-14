@@ -18,8 +18,8 @@
         "symfony/process": "^5.4"
     },
     "scripts": {
-        "lint-php": "phpcs --standard=PSR12 Plugin.php Settings.php Task",
-        "lint-php-fix": "phpcbf --standard=PSR12 Plugin.php Settings.php Task",
+        "lint-php": "phpcs --standard=PSR12 DbipUpdater",
+        "lint-php-fix": "phpcbf --standard=PSR12 DbipUpdater",
         "lint-md": "composer exec -- php -r \"passthru('npx markdownlint-cli *.md --fix');\"",
         "lint": [
             "@lint-php",

@@ -24,7 +24,7 @@ use Exception;
  */
 class DbipUpdater extends Plugin
 {
-    public const PLUGIN_VERSION = '1.3.0';
+    public const PLUGIN_VERSION = '1.4.0';
 
     /**
      * Register plugin settings container

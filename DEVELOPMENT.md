@@ -2,6 +2,22 @@
 
 This document provides information about development tools and processes for the DbipUpdater plugin.
 
+## Project Structure
+
+The project is organized as follows:
+
+- `/DbipUpdater/` - Contains the actual Matomo plugin code
+  - `Plugin.php` - Main plugin class
+  - `Settings.php` - Plugin settings
+  - `Task/` - Background tasks
+  - `plugin.json` - Plugin metadata
+- Root directory - Contains development tools and documentation
+  - `composer.json` - Dependencies and development scripts
+  - `phpcs.xml` - PHP coding standards configuration
+  - `markdownlint.json` - Markdown linting configuration
+  - `DEVELOPMENT.md` - Development documentation
+  - `CHANGELOG.md` - Version history
+
 ## Code Quality Tools
 
 This project uses linting tools to maintain code quality and consistent style:
