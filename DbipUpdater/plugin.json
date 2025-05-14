@@ -1,11 +1,26 @@
 {
-  "name": "DbipUpdater",
-  "version": "1.4.0",
-  "description": "Automatically updates the DB-IP MMDB URL for GeoIP2 with a configurable JSON endpoint and monthly schedule.",
-  "author": "Franz und Franz",
-  "license": "GPL v3+",
-  "theme": false,
-  "require": {
-    "matomo": ">=5.0.0,<6.0.0"
-  }
+    "name": "DbipUpdater",
+    "description": "Automatically updates the DB-IP MMDB URL for GeoIP2 with a configurable JSON endpoint and monthly schedule.",
+    "version": "1.4.0",
+    "theme": false,
+    "require": {
+        "matomo": ">=5.0.0,<6.0.0"
+    },
+    "authors": [
+        {
+            "name": "Franz und Franz",
+            "email": "office@franz.agency",
+            "homepage": "https://franz.agency"
+        }
+    ],
+    "license": "GPL v3+",
+    "homepage": "https://github.com/franz-agency/matomo-dbip-updater",
+    "keywords": [
+        "dbip",
+        "geolocation",
+        "geoip",
+        "mmdb",
+        "update",
+        "updater"
+    ]
 }
