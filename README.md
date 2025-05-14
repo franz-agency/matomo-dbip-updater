@@ -47,7 +47,7 @@ If you encounter issues:
 ## Support
 For support, please:
 - Submit issues on [GitHub](https://github.com/franz-agency/matomo-dbip-updater/issues)
-- Visit our [Website](https://franzundfranzisweb.com)
+- Visit our [Website](https://franz.agency)
 
 ## License
 GPL v3 or later
