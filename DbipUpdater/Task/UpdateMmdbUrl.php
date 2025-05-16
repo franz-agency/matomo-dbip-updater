@@ -4,11 +4,12 @@ namespace Matomo\Plugins\DbipUpdater\Task;
 
 use Matomo\Plugin\ScheduledTask;
 use Matomo\ConfigWriter;
-use Matomo\Container;
-use Matomo\Settings\Manager as SettingsManager;
+// use Matomo\Container; // This seems unused
+// use Matomo\Settings\Manager as SettingsManager; // Unused, settings are loaded directly
 use Matomo\Log;
 use Matomo\Date;
 use Matomo\Plugins\DbipUpdater\Settings;
+use Matomo\Plugins\DbipUpdater\DbipUpdater; // Added to access PLUGIN_VERSION
 use Exception;
 
 /**
@@ -30,6 +31,9 @@ class UpdateMmdbUrl extends ScheduledTask
 {
     public function getName(): string
     {
+        // It's good practice for the task name to be unique and descriptive.
+        // Using 'DbipUpdater.UpdateMmdbUrl' is fine, but sometimes 'PluginName.TaskName' is used.
+        // The current name from the original file is 'DbipUpdater.UpdateMmdbUrlTask'. Let's stick to it.
         return 'DbipUpdater.UpdateMmdbUrlTask';
     }
 
@@ -79,7 +83,7 @@ class UpdateMmdbUrl extends ScheduledTask
             Log::info("DbipUpdater: Successfully updated DB-IP MMDB URL to {$mmdbUrl}");
         } catch (Exception $e) {
             // Check if retry is possible
-            if ($this->retryCount < $this->settings->maxRetries) {
+            if ($this->settings && $this->settings->maxRetries !== null && $this->retryCount < $this->settings->maxRetries->getValue()) {
                 $this->retryCount++;
                 $waitSeconds = $this->retryCount * 5; // Progressive backoff
 
@@ -125,14 +129,18 @@ class UpdateMmdbUrl extends ScheduledTask
     private function fetchAndExtractMmdbUrl(): string
     {
         $jsonUrl = $this->settings->jsonUrl->getValue();
+        if (empty($jsonUrl)) {
+            throw new Exception("JSON URL is not configured in DbipUpdater settings.");
+        }
+        
         $timeout = (int)$this->settings->connectionTimeout->getValue();
 
         // Create context with timeout from settings
         $context = stream_context_create([
             'http' => [
                 'timeout' => $timeout,
-                'user_agent' => 'Matomo DbipUpdater Plugin/1.3.0',
-                'ignore_errors' => true,
+                'user_agent' => 'Matomo DbipUpdater Plugin/' . DbipUpdater::PLUGIN_VERSION, // Using constant
+                'ignore_errors' => true, // Important for reading HTTP status codes on error
             ]
         ]);
 
@@ -142,29 +150,31 @@ class UpdateMmdbUrl extends ScheduledTask
         $json = @file_get_contents($jsonUrl, false, $context);
 
         // Check for HTTP response headers to provide better error messages
-        if (isset($http_response_header)) {
+        // $http_response_header is magically populated by file_get_contents
+        if (isset($http_response_header) && is_array($http_response_header) && !empty($http_response_header)) {
             $statusLine = $http_response_header[0];
             preg_match('{HTTP/\S*\s(\d{3})}', $statusLine, $match);
             $statusCode = $match[1] ?? null;
 
             if ($statusCode && $statusCode != '200') {
-                $errorMsg = "HTTP Error: {$statusLine}";
-                $this->logDetailed($errorMsg);
+                $errorMsg = "HTTP Error: {$statusLine} when accessing {$jsonUrl}";
+                $this->logDetailed($errorMsg); // Log details before throwing generic
 
                 if ($statusCode == '403' || $statusCode == '401') {
-                    Log::error("DbipUpdater: Authentication failure. Check your DB-IP account credentials.");
-                    throw new Exception("Authentication failed: {$errorMsg}");
+                    Log::error("DbipUpdater: Authentication failure ({$statusCode}). Check your DB-IP account credentials or API key if used in URL.");
+                    throw new Exception("Authentication failed ({$statusCode}): {$statusLine}");
                 }
-
-                Log::error("DbipUpdater: HTTP error: {$errorMsg}");
+                
+                Log::error("DbipUpdater: {$errorMsg}");
                 throw new Exception("HTTP error when accessing {$jsonUrl}: {$errorMsg}");
             }
         }
 
+
         if ($json === false) {
             $error = error_get_last();
-            $errorMsg = $error ? $error['message'] : 'Unknown error';
-            Log::error("DbipUpdater: Failed to fetch JSON: {$errorMsg}");
+            $errorMsg = $error ? $error['message'] : 'Unknown error during connection';
+            Log::error("DbipUpdater: Failed to fetch JSON from {$jsonUrl}: {$errorMsg}");
             throw new Exception("Could not retrieve JSON from {$jsonUrl}: {$errorMsg}");
         }
 
@@ -172,7 +182,7 @@ class UpdateMmdbUrl extends ScheduledTask
         $data = json_decode($json, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             $errorMsg = json_last_error_msg();
-            Log::error("DbipUpdater: JSON decode error: {$errorMsg}");
+            Log::error("DbipUpdater: JSON decode error: {$errorMsg}. Response: " . substr($json, 0, 500));
             throw new Exception("JSON decode error: {$errorMsg}");
         }
 
@@ -183,10 +193,10 @@ class UpdateMmdbUrl extends ScheduledTask
             // Check if we received a valid JSON structure but with a different schema
             if (!empty($data)) {
                 $receivedStructure = json_encode(array_keys($data));
-                $this->logDetailed("Received unexpected JSON structure: {$receivedStructure}");
+                $this->logDetailed("Received unexpected JSON structure: {$receivedStructure}. Full response: " . substr($json, 0, 500));
             }
 
-            Log::error("DbipUpdater: Missing 'mmdb.url' in JSON response");
+            Log::error("DbipUpdater: Missing 'mmdb.url' in JSON response from {$jsonUrl}");
             throw new Exception("Missing 'mmdb.url' key in JSON response");
         }
 
@@ -216,13 +226,13 @@ class UpdateMmdbUrl extends ScheduledTask
             $currentUrl = $configWriter->getConfigValue('GeoIP2', 'dbipMmdbUrl');
 
             if ($currentUrl !== null && $currentUrl === $mmdbUrl) {
-                $this->logDetailed("DB-IP URL unchanged, no update needed");
+                $this->logDetailed("DB-IP URL unchanged ('{$mmdbUrl}'), no update needed.");
                 return;
             }
 
             // Update the configuration
             $configWriter->updateConfig('GeoIP2', 'dbipMmdbUrl', $mmdbUrl);
-            $this->logDetailed("Successfully updated configuration value");
+            $this->logDetailed("Successfully updated Matomo configuration: [GeoIP2] dbipMmdbUrl = {$mmdbUrl}");
         } catch (Exception $e) {
             Log::error("DbipUpdater: Failed to update config: {$e->getMessage()}");
             throw new Exception("Failed to update Matomo configuration: {$e->getMessage()}");
@@ -237,7 +247,8 @@ class UpdateMmdbUrl extends ScheduledTask
     private function logDetailed(string $message): void
     {
         if ($this->detailedLogging) {
-            Log::debug("DbipUpdater: {$message}");
+            // Using Log::debug for detailed, potentially verbose, logging
+            Log::debug("DbipUpdater (Detailed): {$message}");
         }
     }
 }

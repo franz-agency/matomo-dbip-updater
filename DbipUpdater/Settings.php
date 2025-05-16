@@ -1,10 +1,11 @@
 <?php
 
 namespace Matomo\Plugins\DbipUpdater;
-
-use Piwik\Settings\FieldConfig;
-use Piwik\Settings\Plugin\SystemSettings;
-use Piwik\Settings\Plugin\SystemSetting;
+// Corrected use statements for Piwik namespace to Matomo
+use Matomo\Settings\FieldConfig;
+use Matomo\Settings\Plugin\SystemSettings;
+use Matomo\Settings\Plugin\SystemSetting; // This class is often used, but individual settings are usually just properties.
+                                         // The base SystemSettings class handles their creation via makeSetting.
 
 /**
  * DbipUpdater Plugin Settings
@@ -16,16 +17,16 @@ use Piwik\Settings\Plugin\SystemSetting;
  */
 class Settings extends SystemSettings
 {
-    /** @var SystemSetting */
+    /** @var \Matomo\Settings\Setting */ // More specific type hint
     public $jsonUrl;
     
-    /** @var SystemSetting */
+    /** @var \Matomo\Settings\Setting */
     public $enableDetailedLogging;
     
-    /** @var SystemSetting */
+    /** @var \Matomo\Settings\Setting */
     public $connectionTimeout;
     
-    /** @var SystemSetting */
+    /** @var \Matomo\Settings\Setting */
     public $maxRetries;
     
     /**
@@ -41,10 +42,10 @@ class Settings extends SystemSettings
             function (FieldConfig $field) {
                 $field->title = 'Download JSON URL';
                 $field->description = 'The URL endpoint returning JSON with download links to your DB-IP files. Replace "changeme" with your DB-IP account ID.';
-                $field->uiControl = FieldConfig::UI_CONTROL_URL;
-                $field->validate = function ($value) {
+                $field->uiControl = FieldConfig::UI_CONTROL_TEXT; // Changed from UI_CONTROL_URL as it's a general text field for a URL
+                $field->validate = function ($value, $setting) { // Added $setting parameter
                     if (!empty($value) && !filter_var($value, FILTER_VALIDATE_URL)) {
-                        throw new \Exception('Please enter a valid URL');
+                        throw new \Exception('Please enter a valid URL for '. $setting->title);
                     }
                 };
             }
@@ -71,6 +72,11 @@ class Settings extends SystemSettings
                 $field->title = 'Connection Timeout';
                 $field->description = 'Timeout in seconds when connecting to the JSON endpoint. Increase this value if you experience timeout issues.';
                 $field->uiControl = FieldConfig::UI_CONTROL_TEXT;
+                $field->validate = function ($value, $setting) { // Added $setting parameter
+                    if (!is_numeric($value) || (int)$value < 0) {
+                        throw new \Exception($setting->title . ' must be a positive integer.');
+                    }
+                };
             }
         );
 
@@ -83,6 +89,11 @@ class Settings extends SystemSettings
                 $field->title = 'Maximum Retries';
                 $field->description = 'Number of attempts to retry download if a connection fails. Set to 0 to disable retry functionality.';
                 $field->uiControl = FieldConfig::UI_CONTROL_TEXT;
+                $field->validate = function ($value, $setting) { // Added $setting parameter
+                    if (!is_numeric($value) || (int)$value < 0) {
+                        throw new \Exception($setting->title . ' must be a positive integer.');
+                    }
+                };
             }
         );
 

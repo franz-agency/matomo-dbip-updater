@@ -32,17 +32,12 @@ class Controller extends CoreAdminController
         Piwik::checkUserHasSuperUserAccess();
         
         // Create and configure the view
-        $view = new View('@DbipUpdater/settings');
+        $view = new View('@DbipUpdater/settings'); // This now points to the corrected settings.twig
         $this->setBasicVariablesView($view);
         $view->title = 'DB-IP Updater';
         
         // Make plugin settings available to the view
         $view->settings = new Settings();
-        
-        // Füge einen Debug-Log hinzu, um zu verifizieren, dass die Settings geladen werden
-        if (method_exists(Log::class, 'debug')) {
-            Log::debug('DbipUpdater: Settings geladen für Controller: ' . get_class($view->settings));
-        }
         
         // Add UserCountry side menu to link back to main settings
         if (class_exists('\\Matomo\\Plugins\\UserCountry\\UserCountry')) {
@@ -58,15 +53,15 @@ class Controller extends CoreAdminController
     /**
      * Save plugin settings
      * 
-     * This handles the form submission for the plugin's system settings
+     * This handles the form submission for the plugin's system settings.
+     * NOTE: If 'templates/settings.twig' uses `settings.getSettingsHtmlForm()`, 
+     * this method might not be directly invoked by the UI form anymore, 
+     * as Matomo's CoreAdminHome controller would handle saving system settings.
+     * It can be kept for API use or other specific form submissions if needed.
      */
     public function saveSettings(): void
     {
         Piwik::checkUserHasSuperUserAccess();
-        
-        if (method_exists(Log::class, 'debug')) {
-            Log::debug('DbipUpdater: saveSettings() method called');
-        }
         
         $settings = new Settings();
         

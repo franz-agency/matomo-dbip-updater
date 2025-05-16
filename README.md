@@ -23,8 +23,9 @@ DbipUpdater is a Matomo plugin that automatically updates the DB-IP MMDB URL for
 5. Activate the plugin
 
 ## Configuration
-1. Go to Administration > Plugins > DbipUpdater
-2. Enter the URL to your DB-IP JSON endpoint
+1. Go to Administration > System > Geolocation. The DB-IP Updater settings will be displayed in a section on this page if the UserCountry plugin is active.
+2. Alternatively, go to Administration > Plugins > DbipUpdater for a direct settings page.
+3. Enter the URL to your DB-IP JSON endpoint
    - Default format: `https://db-ip.com/account/YOUR_ACCOUNT_ID/db/ip-to-location/`
    - Make sure to replace `YOUR_ACCOUNT_ID` with your actual DB-IP account ID
 
@@ -40,9 +41,10 @@ The plugin expects the JSON endpoint to return a response in the following forma
 
 ## Troubleshooting
 If you encounter issues:
-1. Check the Matomo error logs
-2. Verify your JSON endpoint is accessible and returns the correct format
-3. Ensure your DB-IP account has valid permissions
+1. Check the Matomo error logs (Administration > Diagnostics > Log viewer).
+2. Verify your JSON endpoint is accessible and returns the correct format.
+3. Ensure your DB-IP account has valid permissions.
+4. Enable "Detailed Logging" in the plugin settings for more verbose logs from the update task.
 
 ## Support
 For support, please:

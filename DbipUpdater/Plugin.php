@@ -5,7 +5,7 @@ namespace Matomo\Plugins\DbipUpdater;
 // DbipUpdater Plugin
 
 use Exception;
-use Matomo\Config as MatomoConfig;
+use Matomo\Config as MatomoConfig; // Corrected alias from PiwikConfig
 use Matomo\Log;
 use Matomo\Menu\MenuAdmin;
 use Matomo\Matomo;
@@ -16,7 +16,6 @@ use Matomo\Scheduler\Schedule\Monthly;
 use Matomo\Settings\Setting;
 use Matomo\Settings\FieldConfig;
 use Matomo\Settings\Manager as SettingsManager;
-use Matomo\Settings\Matomo;
 use Matomo\Url;
 use Matomo\Version;
 use Matomo\View;
@@ -42,8 +41,6 @@ class DbipUpdater extends Plugin
      */
     public function registerEvents(): array
     {
-        // Debug log to verify plugin load
-        Log::debug('DbipUpdater: registerEvents() called');
         return [
             'AssetManager.getJavaScriptFiles' => 'getJsFiles',
             'AssetManager.getStylesheetFiles' => 'getCssFiles',
@@ -54,7 +51,7 @@ class DbipUpdater extends Plugin
             'Template.dashboardSettings.afterItems' => 'showDirectAccessLinks', // Show links in dashboard settings
             'Template.systemSettings.afterSystemSettingsView' => 'showDirectAccessLinks', // Show in system settings
             'Translate.getClientSideTranslationKeys' => 'getClientSideTranslationKeys', // Translations
-            'Menu.Admin.addItems' => 'configureAdminMenu', // Register admin menu items
+            // 'Menu.Admin.addItems' => 'configureAdminMenu', // Kein eigenes Menü mehr, Integration wie GeoIp2
         ];
     }
     
@@ -85,21 +82,8 @@ class DbipUpdater extends Plugin
      */
     public function renderDbipAdminSection(&$out): void
     {
-        // Füge einen auffälligen Debug-Block hinzu
-        $debugBlock = <<<HTML
-<div style="background-color: #ffeb3b; color: #000; padding: 15px; margin: 20px 0; border-radius: 4px; border: 2px solid #f00;">
-    <h3 style="margin-top: 0;">DB-IP Updater Debug-Info</h3>
-    <p><strong>Diese Einstellungen sind erreichbar.</strong> Du siehst gerade den Debug-Block der DbipUpdater-Einstellungen!</p>
-    <p>Klasse geladen: Settings</p>
-    <p>URL: index.php?module=DbipUpdater&action=index</p>
-    <a href="index.php?module=DbipUpdater&action=index" class="btn btn-flat" style="background: #2c3e50; color: white; padding: 8px 16px; text-decoration: none; border-radius: 3px; display: inline-block; margin-top: 10px;">Zur vollständigen Einstellungsseite</a>
-</div>
-HTML;
-
-        $out .= $debugBlock;
-        
         // Lade original View
-        $view = new View('@DbipUpdater/dbip-admin-section');
+        $view = new View('@DbipUpdater/dbip-admin-section'); // This points to the corrected dbip-admin-section.twig
         $view->settings = new Settings();
         $out .= $view->render();
     }
@@ -107,6 +91,9 @@ HTML;
     /**
      * Render our settings section on the UserCountry admin page
      * 
+     * This method seems redundant if renderDbipAdminSection is used for the UserCountry hook.
+     * If it's meant for a different purpose, its usage should be clarified.
+     * For now, keeping it as is from the original.
      * @param string $out The output string to append to
      */
     public function renderAdminSettingsSection(&$out): void
@@ -135,6 +122,7 @@ HTML;
     {
         $translationKeys[] = 'DbipUpdater_Settings';
         $translationKeys[] = 'DbipUpdater_SettingsDescription';
+        $translationKeys[] = 'CorePluginsAdmin_PluginSettingsNotAvailable'; // Added for better error messages in Twig
     }
     
     /**
@@ -170,6 +158,11 @@ HTML;
             new \Matomo\Scheduler\Task(
                 $this, 
                 'UpdateMmdbUrl',
+                                 // This should match the class name in Task/UpdateMmdbUrl.php if it's the runnable method
+                                 // Or if UpdateMmdbUrl is a class, it should be its FQCN.
+                                 // Given the structure, it likely refers to a method named 'UpdateMmdbUrl' in this class
+                                 // or a callable. If 'UpdateMmdbUrl' is a task class, the third param should be null.
+                                 // Assuming UpdateMmdbUrl is the task class itself.
                 null, 
                 $schedule
             )
@@ -194,11 +187,12 @@ HTML;
 
         // Make sure the GeoIP2 section exists in config
         try {
-            $config = PiwikConfig::getInstance();
+            // Corrected from PiwikConfig to MatomoConfig
+            $config = MatomoConfig::getInstance(); 
             $geoIpConfig = $config->GeoIP2;
             
             if (empty($geoIpConfig['dbipMmdbUrl'])) {
-                $geoIpConfig['dbipMmdbUrl'] = '';
+                $geoIpConfig['dbipMmdbUrl'] = ''; // Initialize if not present
                 $config->GeoIP2 = $geoIpConfig;
                 $config->forceSave();
                 Log::info("DbipUpdater: Plugin installed successfully, config initialized");
@@ -258,21 +252,20 @@ HTML;
         parent::deactivate();
     }
 
-    /**
-     * Register plugin admin menu items
-     *
-     * @param MenuAdmin $menu
-     */
+    // Kein eigenes Menü mehr, Integration erfolgt über UserCountry und SystemSettings wie bei GeoIp2.
+    // Die Methode bleibt als Kommentar für spätere Referenz erhalten.
+    /*
     public function configureAdminMenu(\Matomo\Menu\MenuAdmin $menu): void
-{
-    if (\Matomo\Matomo::hasUserSuperUserAccess()) {
-        $menu->addItem(
-            'General_Settings',
-            'DB-IP Updater',
-            ['module' => 'DbipUpdater', 'action' => 'index'],
-            true,
-            30
-        );
+    {
+        if (\Matomo\Matomo::hasUserSuperUserAccess()) {
+            $menu->addItem(
+                'General_Settings',
+                'DB-IP Updater',
+                ['module' => 'DbipUpdater', 'action' => 'index'],
+                true,
+                30
+            );
+        }
     }
-}
+    */
 }

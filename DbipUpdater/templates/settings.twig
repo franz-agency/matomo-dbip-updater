@@ -1,24 +1,11 @@
 {% extends 'admin.twig' %}
 
 {% block content %}
-    <div style="background-color: #ffeb3b; color: #000; padding: 15px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; text-align: center;">
-        <h2 style="margin-top: 0;">DB-IP Updater Einstellungen</h2>
-        <p>Diese Seite sollte direkt über das Menü erreichbar sein.</p>
-        <p>Alternative Link: <a href="index.php?module=UserCountry&action=admin" style="color: #2c3e50;">UserCountry Admin</a></p>
-    </div>
-    
+
     <div piwik-content-block content-title="{{ 'DbipUpdater_Settings'|translate }}">
         <p>{{ 'DbipUpdater_SettingsDescription'|translate }}</p>
 
-        <!-- Debug-Informationen -->
-        <div class="dbip-debug" style="margin-bottom: 20px; padding: 10px; background: #f8f8f8; border-left: 3px solid #2c3e50; font-family: monospace;">
-            <h3>Debug-Info:</h3>
-            <ul>
-                <li>Settings-Klasse: {{ settings is defined ? 'vorhanden' : 'nicht definiert' }}</li>
-                <li>Settings-Typ: {{ settings is defined ? 'SystemSettings' : 'N/A' }}</li>
-            </ul>
-        </div>
-        
+
         <div class="dbip-updater-section">
             <div piwik-form>
                 {% if settings is defined and settings is not null %}
@@ -53,7 +40,7 @@
                     </form>
                 {% else %}
                     <div class="alert alert-danger">
-                        Es gab ein Problem beim Laden der Einstellungen. Bitte überprüfen Sie die Plugin-Konfiguration.
+                        {{ 'CorePluginsAdmin_PluginSettingsNotAvailable'|translate }}
                     </div>
                 {% endif %}
             </div>
