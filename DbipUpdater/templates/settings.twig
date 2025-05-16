@@ -1,49 +1,21 @@
 {% extends 'admin.twig' %}
 
 {% block content %}
+<div piwik-content-block content-title="{{ 'DbipUpdater_Settings'|translate }}">
+    <p>{{ 'DbipUpdater_SettingsDescription'|translate }}</p>
 
-    <div piwik-content-block content-title="{{ 'DbipUpdater_Settings'|translate }}">
-        <p>{{ 'DbipUpdater_SettingsDescription'|translate }}</p>
-
-
-        <div class="dbip-updater-section">
-            <div piwik-form>
-                {% if settings is defined and settings is not null %}
-                    <form id="dbipUpdaterSettings" method="post" action="index.php?module=DbipUpdater&action=saveSettings">
-                        <!-- CSRF-Token wird automatisch von Matomo hinzugefügt -->
-                        
-                        <div class="form-group">
-                            <label>Download JSON URL:</label>
-                            <input type="text" name="jsonUrl" class="form-control" value="{{ settings.jsonUrl.getValue() }}" />
-                            <p class="help-block">The URL endpoint returning JSON with download links to your DB-IP files. Replace "changeme" with your DB-IP account ID.</p>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Enable Detailed Logging:</label>
-                            <input type="checkbox" name="enableDetailedLogging" value="1" {% if settings.enableDetailedLogging.getValue() %}checked="checked"{% endif %} />
-                            <p class="help-block">When enabled, additional detailed information will be logged during updates. Useful for troubleshooting but may increase log size.</p>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Connection Timeout:</label>
-                            <input type="number" name="connectionTimeout" class="form-control" value="{{ settings.connectionTimeout.getValue() }}" min="5" max="120" />
-                            <p class="help-block">Timeout in seconds when connecting to the JSON endpoint. Increase this value if you experience timeout issues.</p>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Maximum Retries:</label>
-                            <input type="number" name="maxRetries" class="form-control" value="{{ settings.maxRetries.getValue() }}" min="0" max="10" />
-                            <p class="help-block">Number of attempts to retry download if a connection fails. Set to 0 to disable retry functionality.</p>
-                        </div>
-                        
-                        <button type="submit" class="btn btn-primary">Save Settings</button>
-                    </form>
-                {% else %}
-                    <div class="alert alert-danger">
-                        {{ 'CorePluginsAdmin_PluginSettingsNotAvailable'|translate }}
-                    </div>
-                {% endif %}
-            </div>
+    <div class="dbip-updater-section">
+        <div piwik-form>
+            {% if settings is defined and settings is not null %}
+                {# Diese Funktion generiert das komplette Formular inklusive Speicher-Button
+                   und sendet es an die korrekte Matomo Core Action zum Speichern von Systemeinstellungen. #}
+                {{ settings.getSettingsHtmlForm('DbipUpdater')|raw }}
+            {% else %}
+                <div class="alert alert-danger">
+                    {{ 'CorePluginsAdmin_PluginSettingsNotAvailable'|translate }}
+                </div>
+            {% endif %}
         </div>
     </div>
+</div>
 {% endblock %}
